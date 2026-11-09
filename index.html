@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi App - AdBlocked PWA</title>
+    <title>Multi App - 3 Tab PWA Hub</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body, html { width: 100%; height: 100%; background: #000; color: #fff; overflow: hidden; }
         .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; }
         
-        .content-frame { flex: 1; width: 100%; border: none; background: #000; }
+        .content-frame { width: 100%; height: calc(100vh - 68px); border: none; background: #000; display: none; }
+        .content-frame.active-frame { display: block; }
         
         .nav-bar {
             height: 68px;
-            background: rgba(15, 15, 15, 0.75);
+            background: rgba(15, 15, 15, 0.85);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border-top: 1px solid rgba(255, 255, 255, 0.12);
@@ -26,18 +27,20 @@
         .nav-btn {
             background: none; border: none; color: #888; font-size: 11px;
             display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; flex: 1;
         }
         .nav-btn svg { width: 22px; height: 22px; fill: currentColor; }
         .nav-btn.active { color: #ff0033; transform: scale(1.05); }
 
         #home-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: calc(100vh - 68px);
-            background: rgba(10, 10, 10, 0.88);
+            background: rgba(10, 10, 10, 0.94);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             display: none; flex-direction: column; padding: 20px; overflow-y: auto; z-index: 500;
         }
+        #home-screen.active-screen { display: flex; }
+        
         .header-title { font-size: 18px; font-weight: 700; margin: 15px 0; color: #ff3333; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
         .cards-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
         
@@ -59,66 +62,84 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Stable Ad-Free YouTube Engine -->
-        <iframe id="mainFrame" class="content-frame" src="https://piped.video" sandbox="allow-scripts allow-same-origin allow-forms allow-modals"></iframe>
+        <!-- Frame 1: YouTube Dedicated Frame -->
+        <iframe id="youtubeFrame" class="content-frame active-frame" src="https://piped.video"></iframe>
+
+        <!-- Frame 2: Other Portals / YouTube Music Dedicated Frame -->
+        <iframe id="mediaFrame" class="content-frame" src="https://www.allsitehub.site/"></iframe>
         
+        <!-- Home / Portals Hub Screen -->
         <div id="home-screen">
-            <div class="header-title">🛡️ Ad-Free Hub & Portals</div>
+            <div class="header-title">🛡️ Portals & Media Hub</div>
             <div class="cards-grid">
-                <div class="portal-card" onclick="openSite('https://piped.video')">
-                    <div><h3>▶️ YouTube (No Ads)</h3><p>Stream YouTube without ads</p></div><span>🔥</span>
+                <div class="portal-card" onclick="openDirect('https://piped.video')">
+                    <div><h3>▶️ YouTube (No Ads)</h3><p>Open YouTube in separate tab</p></div><span>🔥</span>
                 </div>
-                <div class="portal-card" onclick="openSite('https://music.youtube.com')">
-                    <div><h3>🎵 YouTube Music</h3><p>Listen to music & tracks</p></div><span>🎶</span>
+                <div class="portal-card" onclick="openInMediaTab('https://music.youtube.com')">
+                    <div><h3>🎵 YouTube Music</h3><p>Open in Media Player Tab</p></div><span>🎶</span>
                 </div>
-                <div class="portal-card" onclick="openSite('https://www.allsitehub.site/')">
-                    <div><h3>🎬 AllSiteHub Movies</h3><p>Movies & TV Shows Portal</p></div><span>➡️</span>
+                <div class="portal-card" onclick="openInMediaTab('https://www.allsitehub.site/')">
+                    <div><h3>🎬 AllSiteHub Movies</h3><p>Open in Media Player Tab</p></div><span>➡️</span>
                 </div>
-                <div class="portal-card" onclick="openSite('https://www.subdubanime.site/')">
-                    <div><h3>⛩️ SubDubAnime</h3><p>Sub & Dub Anime Portal</p></div><span>➡️</span>
+                <div class="portal-card" onclick="openInMediaTab('https://www.subdubanime.site/')">
+                    <div><h3>⛩️ SubDubAnime</h3><p>Open in Media Player Tab</p></div><span>➡️</span>
                 </div>
-                <div class="portal-card" onclick="openExternal('https://1.1.1.1/')">
+                <div class="portal-card" onclick="openDirect('https://1.1.1.1/')">
                     <div><h3>🛡️ 1.1.1.1 DNS / VPN</h3><p>Fast & Secure Connection</p></div><span>🔒</span>
                 </div>
             </div>
         </div>
         
+        <!-- 3-Tab Glass Navigation Bar -->
         <div class="nav-bar">
-            <button class="nav-btn active" id="btn-tube" onclick="switchTab('youtube')">
+            <button class="nav-btn active" id="btn-youtube" onclick="switchTab('youtube')">
                 <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>YouTube
             </button>
+            <button class="nav-btn" id="btn-media" onclick="switchTab('media')">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Media Player
+            </button>
             <button class="nav-btn" id="btn-home" onclick="switchTab('home')">
-                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Portals & Music
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
             </button>
         </div>
     </div>
     
     <script>
-        const iframe = document.getElementById('mainFrame');
+        const youtubeFrame = document.getElementById('youtubeFrame');
+        const mediaFrame = document.getElementById('mediaFrame');
         const homeScreen = document.getElementById('home-screen');
-        const btnTube = document.getElementById('btn-tube');
+        
+        const btnYoutube = document.getElementById('btn-youtube');
+        const btnMedia = document.getElementById('btn-media');
         const btnHome = document.getElementById('btn-home');
         
-        window.open = function() { return null; };
-
         function switchTab(tab) {
-            if (tab === 'home') {
-                homeScreen.style.display = 'flex';
-                btnHome.classList.add('active'); 
-                btnTube.classList.remove('active');
-            } else {
-                homeScreen.style.display = 'none';
-                btnTube.classList.add('active'); 
-                btnHome.classList.remove('active');
+            youtubeFrame.classList.remove('active-frame');
+            mediaFrame.classList.remove('active-frame');
+            homeScreen.classList.remove('active-screen');
+            
+            btnYoutube.classList.remove('active');
+            btnMedia.classList.remove('active');
+            btnHome.classList.remove('active');
+            
+            if (tab === 'youtube') {
+                youtubeFrame.classList.add('active-frame');
+                btnYoutube.classList.add('active');
+            } else if (tab === 'media') {
+                mediaFrame.classList.add('active-frame');
+                btnMedia.classList.add('active');
+            } else if (tab === 'home') {
+                homeScreen.classList.add('active-screen');
+                btnHome.classList.add('active');
             }
         }
-        function openSite(url) {
-            homeScreen.style.display = 'none';
-            iframe.src = url;
-            btnTube.classList.remove('active'); 
-            btnHome.classList.add('active');
+
+        function openInMediaTab(url) {
+            mediaFrame.src = url;
+            switchTab('media');
         }
-        function openExternal(url) {
+
+        function openDirect(url) {
             window.location.href = url;
         }
     </script>
