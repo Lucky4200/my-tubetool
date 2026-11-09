@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi App - Free & AdBlocked</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body, html { width: 100%; height: 100%; background: #0f0f0f; color: #fff; overflow: hidden; }
+        .app-container { display: flex; flex-direction: column; width: 100%; height: 100vh; }
+        .content-frame { flex: 1; width: 100%; border: none; background: #000; }
+        .nav-bar {
+            height: 65px;
+            background: rgba(20, 20, 20, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; z-index: 1000;
+        }
+        .nav-btn {
+            background: none; border: none; color: #aaa; font-size: 11px;
+            display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+        }
+        .nav-btn svg { width: 22px; height: 22px; fill: currentColor; }
+        .nav-btn.active, .nav-btn:hover { color: #ff0033; }
+        #home-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: calc(100vh - 65px);
+            background: linear-gradient(135deg, #121212 0%, #1f1f1f 100%);
+            display: none; flex-direction: column; padding: 20px; overflow-y: auto; z-index: 500;
+        }
+        .header-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #ff3333; text-align: center; }
+        .cards-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); padding: 18px; border-radius: 14px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .movie-card h3 { font-size: 16px; margin-bottom: 4px; }
+        .movie-card p { font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <iframe id="mainFrame" class="content-frame" src="https://m.youtube.com" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+        <div id="home-screen">
+            <div class="header-title">🎬 مووی پورٹلز اور شارٹ کٹس</div>
+            <div class="cards-grid">
+                <div class="movie-card" onclick="openSite('https://www.allsitehub.site/')">
+                    <div><h3>AllSiteHub Movies</h3><p>موویز اور شوز</p></div><span>➡️</span>
+                </div>
+                <div class="movie-card" onclick="openSite('https://www.subdubanime.site/')">
+                    <div><h3>SubDubAnime</h3><p>سب اور ڈب انیمے</p></div><span>➡️</span>
+                </div>
+                <div class="movie-card" onclick="openSite('https://1.1.1.1/')">
+                    <div><h3>1.1.1.1 DNS / VPN</h3><p>فاسٹ کنکشن</p></div><span>🛡️</span>
+                </div>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <button class="nav-btn" id="btn-home" onclick="switchTab('home')">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>ہوم
+            </button>
+            <button class="nav-btn active" id="btn-tube" onclick="switchTab('youtube')">
+                <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>یوٹیوب
+            </button>
+        </div>
+    </div>
+    <script>
+        const iframe = document.getElementById('mainFrame');
+        const homeScreen = document.getElementById('home-screen');
+        const btnHome = document.getElementById('btn-home');
+        const btnTube = document.getElementById('btn-tube');
+        function switchTab(tab) {
+            if (tab === 'home') {
+                homeScreen.style.display = 'flex';
+                btnHome.classList.add('active'); btnTube.classList.remove('active');
+            } else {
+                homeScreen.style.display = 'none';
+                btnTube.classList.add('active'); btnHome.classList.remove('active');
+            }
+        }
+        function openSite(url) {
+            homeScreen.style.display = 'none';
+            iframe.src = url;
+            btnTube.classList.remove('active'); btnHome.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
